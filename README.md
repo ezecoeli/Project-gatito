@@ -39,7 +39,7 @@ Hasta el momento se han implementado 7 diferentes niveles, con enemigos y objeti
 
 
 ## Licencia
-Copyright (c) [2025] [Ezequiel Camilo COeli]. Todos los derechos reservados.
+Copyright (c) [2025] [Ezequiel Camilo Coeli]. Todos los derechos reservados.
 
 Ninguna parte de este software puede ser reproducida, distribuida o utilizada sin el permiso explícito del autor.
 
