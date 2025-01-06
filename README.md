@@ -20,9 +20,7 @@ En un mundo distópico donde la inteligencia artificial ha alcanzado un nivel de
 - **Pantalla final**: Un mensaje de felicitación al completar todos los niveles.
 
 ### Niveles actuales
-1. Recolecta comida mientras evitas una aspiradora.
-2. Encuentra agua esquivando un dron.
-3. Consigue un juguete mientras evitas un auto.
+Hasta el momento se han implementado 7 diferentes niveles, con enemigos y objetivos distintos. 
 
 ### Controles
 - **Flechas izquierda/derecha**: Mover al gatito.
@@ -35,14 +33,16 @@ En un mundo distópico donde la inteligencia artificial ha alcanzado un nivel de
 ## Mejoras futuras
 - **Nuevos niveles** con mecánicas más complejas.
 - **Mejoras visuales**: Gráficos y animaciones más detalladas.
-- **Más enemigos y desafíos**: Añadir variedad a los peligros.
-- **Sonido**: Música de fondo y efectos sonoros.
-- **Guardar progreso**: Permitir que los jugadores continúen donde dejaron.
+- **Más enemigos y desafíos**: Añadir variedad a los peligros y niveles.
 - **Nuevas mecánicas**: Poderes especiales, recompensas adicionales, entre otros.
+- **Correción de errores y mejoras**
 
 
 ## Licencia
-Este proyecto está bajo la licencia MIT. Puedes usarlo y modificarlo libremente, pero no olvides dar crédito.
+Copyright (c) [2025] [Ezequiel Camilo COeli]. Todos los derechos reservados.
+
+Ninguna parte de este software puede ser reproducida, distribuida o utilizada sin el permiso explícito del autor.
+
 
 ---
 Gracias por echar un vistazo a **mIAu**. ¡Espero que disfrutes ayudando al gatito en su aventura! 🐾
