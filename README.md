@@ -1,8 +1,7 @@
 # mIAu
 
 <video width="320" height="240" controls>
-  <source src="https://github.com/ezecoeli/Project-gatito/blob/main/mIAu_demo.mp4" type="video/mp4">
-  Tu navegador no soporta el elemento de video.
+  <source src="https://github.com/ezecoeli/Project-gatito/blob/main/mIAu_demo.mp4">
 </video>
 
 
