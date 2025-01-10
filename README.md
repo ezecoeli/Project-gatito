@@ -1,8 +1,6 @@
 # mIAu
 
-<video width="320" height="240" controls>
-  <source src="https://github.com/ezecoeli/Project-gatito/blob/main/mIAu_demo.mp4">
-</video>
+[Ver video de demostración](https://github.com/ezecoeli/Project-gatito/blob/main/mIAu_demo.mp4)
 
 
 ¡Bienvenido a **mIAu**! Este es mi primer proyecto de videojuego desarrollado en Python utilizando la librería **Pygame**. Aunque actualmente es un proyecto básico y simple, mi objetivo es mejorarlo progresivamente, agregando más contenido y mejorando la calidad general del juego.
