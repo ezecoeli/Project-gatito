@@ -10,7 +10,7 @@ pygame.init()
 pygame.mixer.init()
 
 # Configuración de la pantalla del juego
-WIDTH, HEIGHT = 900, 700
+WIDTH, HEIGHT = 1000, 800
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("mIAu")
 
@@ -36,6 +36,7 @@ FPS = 60
 start_screen_music = "sounds/start_screen_music.mp3"
 level_music = "sounds/level_music.mp3"
 end_screen_music = "sounds/end_screen_music.mp3"
+game_over_music = "sounds/game_over_music.mp3"
 
 # Cargar los efectos de sonidos
 jump_sound = pygame.mixer.Sound("sounds/jump.mp3")
@@ -49,6 +50,9 @@ falls_sound.set_volume(0.5)
 
 enemy_hit_sound = pygame.mixer.Sound("sounds/enemy_hit.mp3")
 enemy_hit_sound.set_volume(0.3)
+
+game_over_sound = pygame.mixer.Sound("sounds/game_over_sound.mp3")
+game_over_sound.set_volume(0.3)
 
 final_sound = pygame.mixer.Sound("sounds/final_sound.mp3")
 final_sound.set_volume(0.4)
@@ -64,13 +68,20 @@ cat_img = cat_img_1  # Carga la primera imagen
 last_move_time = pygame.time.get_ticks()  # Guardar el tiempo de la última acción de movimiento
 movement_interval = 200  # Intervalo de tiempo en milisegundos para alternar entre las imágenes
 
-# Carga de imagenes de objetos
+# Carga de imágenes
 logo_img = pygame.image.load("images/logo.png")
 logo_img = pygame.transform.scale(logo_img, (180, 130))
 
 controls_img = pygame.image.load("images/controls.png")
 controls_img = pygame.transform.scale(controls_img, (200, 100))
 
+heart_img = pygame.image.load("images/heart.png")
+heart_img = pygame.transform.scale(heart_img, (30, 30))
+
+quit_img = pygame.image.load("images/quit.png")
+quit_img = pygame.transform.scale(quit_img, (100, 30))
+
+# Carga de imágenes de objetos
 food_img = pygame.image.load("images/food.png")
 food_img = pygame.transform.scale(food_img, (50, 40))
 
@@ -104,23 +115,50 @@ box_img = pygame.transform.scale(box_img, (55, 55))
 bed_img = pygame.image.load("images/bed.png")
 bed_img = pygame.transform.scale(bed_img, (65, 65))
 
-# Lista ordenada de objetos por nivel
-required_objects_order = ["comida", "agua", "resorte", "churu", "hierba", "ovillo", "ratoncito", "arenero", "caja", "cama"]
-
 # Carga de imagenes de enemigos
+thunder_img = pygame.image.load("images/thunder.png")
+thunder_img = pygame.transform.scale(thunder_img, (10, 20))
+
 vacuum_img = pygame.image.load("images/vacuum.png")
-vacuum_img = pygame.transform.scale(vacuum_img, (60, 60))
+vacuum_img = pygame.transform.scale(vacuum_img, (65, 65))
 
 drone_img = pygame.image.load("images/dron.png")
-drone_img = pygame.transform.scale(drone_img, (50, 50))
+drone_img = pygame.transform.scale(drone_img, (60, 60))
 
 car_img = pygame.image.load("images/car.png")
-car_img = pygame.transform.scale(car_img, (50, 50))
+car_img = pygame.transform.scale(car_img, (60, 60))
 
 bike_img = pygame.image.load("images/bike.png")
-bike_img = pygame.transform.scale(bike_img, (75, 75))
+bike_img = pygame.transform.scale(bike_img, (90, 80))
 
-# Fondos para los niveles
+lawn_mower_img = pygame.image.load("images/lawn_mower.png")
+lawn_mower_img = pygame.transform.scale(lawn_mower_img, (85, 75))
+
+washing_machine_img = pygame.image.load("images/washing_machine.png")
+washing_machine_img = pygame.transform.scale(washing_machine_img, (85, 75))
+
+iron_img = pygame.image.load("images/iron.png")
+iron_img = pygame.transform.scale(iron_img, (70, 70))
+
+plane_img = pygame.image.load("images/plane.png")
+plane_img = pygame.transform.scale(plane_img, (70, 70))
+
+robot_img = pygame.image.load("images/robot.png")
+robot_img = pygame.transform.scale(robot_img, (70, 70))
+
+gameboy_img = pygame.image.load("images/gameboy.png")
+gameboy_img = pygame.transform.scale(gameboy_img, (75, 75))
+
+drill_img = pygame.image.load("images/drill.png")
+drill_img = pygame.transform.scale(drill_img, (65, 65))
+
+tv_img = pygame.image.load("images/tv.png")
+tv_img = pygame.transform.scale(tv_img, (70, 70))
+
+pc_img = pygame.image.load("images/pc.png")
+pc_img = pygame.transform.scale(pc_img, (100, 100))
+
+# Carga de imágenes de fondos para los niveles
 level_1_bg = pygame.image.load("images/kitchen.png")
 level_1_bg = pygame.transform.scale(level_1_bg, (WIDTH, HEIGHT))
 
@@ -152,22 +190,29 @@ level_10_bg = pygame.image.load("images/study_room.png")
 level_10_bg = pygame.transform.scale(level_10_bg, (WIDTH, HEIGHT))
 
 # Fondo pantalla inicial
-start_screen_bg = pygame.image.load("images/pantalla_inicio.png")  # Imagen para la pantalla de inicio
+start_screen_bg = pygame.image.load("images/pantalla_inicio.png") 
 start_screen_bg = pygame.transform.scale(start_screen_bg, (WIDTH, HEIGHT))
+
+# Fondo pantalla game over
+game_over_bg = pygame.image.load("images/game_over_background.png")
+game_over_bg = pygame.transform.scale(game_over_bg, (WIDTH, HEIGHT))
 
 # Fondo pantalla final
 end_screen_bg = pygame.image.load("images/pantalla_final.png")
 end_screen_bg = pygame.transform.scale(end_screen_bg, (WIDTH, HEIGHT))
 
 # Plataforma sprite
-platform_texture = pygame.image.load("images/platform_texture.png")  # Imagen para las plataformas
+platform_texture = pygame.image.load("images/platform_texture.png")  
 platform_texture = pygame.transform.scale(platform_texture, (100, 20))
 
 # Variables globales
 player_name = ""
 current_level = 1
-# Set para almacenar los objetos recogidos
-collected_objects = set()
+collision_count = 0
+player_lives = 3
+enemy_bullets = []  # Lista para almacenar los disparos activos
+collected_objects = set() # Set para almacenar los objetos recogidos
+all_sparks = [] # Lista global para almacenar los efectos de chispas
 
 # Configuración del jugador
 player = pygame.Rect(100, 500, 40, 40)
@@ -242,7 +287,7 @@ levels = {
     2: {
         "background": apply_background_effect(level_2_bg),
         "object": water_img,
-        "enemies": [drone_img, vacuum_img],
+        "enemies": [vacuum_img, tv_img],
         "message": "Has conseguido agua",
         "object_position": (600, 370, 30, 30),
         "object_name": "agua"
@@ -258,7 +303,7 @@ levels = {
     4: {
         "background": apply_background_effect(level_4_bg),
         "object": churu_img,
-        "enemies": [car_img, drone_img, vacuum_img],
+        "enemies": [drone_img, drill_img, car_img],
         "message": "Has conseguido churu",
         "object_position": (650, 150, 30, 30),
         "object_name": "churu"
@@ -274,7 +319,7 @@ levels = {
     6: {
         "background": apply_background_effect(level_6_bg),
         "object": wool_img,
-        "enemies": [car_img, drone_img, vacuum_img, bike_img],
+        "enemies": [bike_img, lawn_mower_img, drone_img, plane_img],
         "message": "Has conseguido ovillo",
         "object_position": (100, 160, 30, 30),
         "object_name": "ovillo"
@@ -282,7 +327,7 @@ levels = {
     7: {
         "background": apply_background_effect(level_7_bg),
         "object": mouse_img,
-        "enemies": [car_img, drone_img, vacuum_img, bike_img],
+        "enemies": [tv_img, car_img, vacuum_img, drone_img],
         "message": "Has conseguido ratoncito",
         "object_position": (650, 160, 30, 30),
         "object_name": "ratoncito"
@@ -290,7 +335,7 @@ levels = {
     8: {
         "background": apply_background_effect(level_8_bg),
         "object": litter_img,
-        "enemies": [car_img, drone_img, vacuum_img, bike_img],
+        "enemies": [iron_img, vacuum_img, washing_machine_img, drone_img],
         "message": "Has conseguido arenero",
         "object_position": (500, 160, 30, 30),
         "object_name": "arenero"
@@ -298,17 +343,17 @@ levels = {
     9: {
         "background": apply_background_effect(level_9_bg),
         "object": box_img,
-        "enemies": [car_img, drone_img, vacuum_img, bike_img, drone_img],
+        "enemies": [car_img, gameboy_img, robot_img, drone_img, plane_img],
         "message": "Has conseguido caja",
-        "object_position": (480, 160, 30, 30),
+        "object_position": (780, 160, 30, 30),
         "object_name": "caja"
     },
     10: {
         "background": apply_background_effect(level_10_bg),
         "object": bed_img,
-        "enemies": [vacuum_img, car_img, drone_img, vacuum_img, bike_img],
+        "enemies": [vacuum_img, tv_img, pc_img, drone_img, plane_img],
         "message": "Has conseguido cama",
-        "object_position": (230, 160, 30, 30),
+        "object_position": (210, 160, 30, 30),
         "object_name": "cama"
     }
 }
@@ -316,87 +361,177 @@ levels = {
 # Plataformas
 platforms_by_level = {
     1: [
-        pygame.Rect(0, 600, 900, 20), # Plataforma inicial
-        pygame.Rect(100, 500, 650, 20),
+        pygame.Rect(0, 700, 900, 20), # Plataforma inicial
+        pygame.Rect(100, 600, 700, 20),
+        pygame.Rect(250, 500, 350, 20),
         pygame.Rect(350, 400, 350, 20),
     ],
     2: [
-        pygame.Rect(0, 600, 900, 20),  # Plataforma inicial 
-        pygame.Rect(150, 500, 750, 20),
-        pygame.Rect(250, 400, 500, 20),
+        pygame.Rect(0, 700, 900, 20),  # Plataforma inicial 
+        pygame.Rect(150, 600, 750, 20),
+        pygame.Rect(150, 500, 700, 20),
+        pygame.Rect(450, 400, 300, 20),
+        pygame.Rect(50, 400, 300, 20),
     ],
     3: [
-        pygame.Rect(0, 600, 900, 20),  # Plataforma inicial 
-        pygame.Rect(150, 500, 650, 20),
-        pygame.Rect(20, 400, 500, 20),
-        pygame.Rect(600, 350, 200, 20),
-        pygame.Rect(150, 300, 400, 20),
+        pygame.Rect(0, 700, 900, 20),  # Plataforma inicial 
+        pygame.Rect(150, 600, 650, 20),
+        pygame.Rect(20, 500, 500, 20),
+        pygame.Rect(600, 450, 200, 20),
+        pygame.Rect(150, 400, 400, 20),
+        pygame.Rect(600, 300, 300, 20),
         pygame.Rect(600, 200, 200, 20),
     ],
     4: [
-        pygame.Rect(0, 600, 900, 20),  # Plataforma inicial 
-        pygame.Rect(200, 500, 600, 20),
-        pygame.Rect(50, 400, 750, 20),
-        pygame.Rect(150, 300, 500, 20),
-        pygame.Rect(500, 200, 200, 20),
+        pygame.Rect(0, 700, 900, 20),  # Plataforma inicial 
+        pygame.Rect(200, 600, 600, 20),
+        pygame.Rect(50, 500, 750, 20),
+        pygame.Rect(150, 400, 500, 20),
+        pygame.Rect(500, 300, 200, 20),
+        pygame.Rect(100, 300, 300, 20),
+        pygame.Rect(600, 200, 100, 20),
     ],
     5: [
-        pygame.Rect(0, 600, 800, 20),  # Plataforma inicial 
-        pygame.Rect(200, 500, 600, 20),
-        pygame.Rect(80, 400, 600, 20),
-        pygame.Rect(150, 300, 250, 20),
+        pygame.Rect(0, 700, 800, 20),  # Plataforma inicial 
+        pygame.Rect(200, 600, 600, 20),
+        pygame.Rect(80, 500, 600, 20),
+        pygame.Rect(150, 400, 250, 20),
+        pygame.Rect(500, 400, 250, 20),
         pygame.Rect(500, 300, 250, 20),
     ],
     6: [
-        pygame.Rect(20, 600, 850, 20),  # Plataforma inicial 
-        pygame.Rect(20, 500, 400, 20),
-        pygame.Rect(550, 500, 300, 20),
-        pygame.Rect(200, 400, 700, 20),
-        pygame.Rect(150, 300, 500, 20),
-        pygame.Rect(100, 200, 200, 20),
+        pygame.Rect(20, 700, 850, 20),  # Plataforma inicial 
+        pygame.Rect(20, 600, 400, 20),
+        pygame.Rect(550, 600, 300, 20),
+        pygame.Rect(200, 500, 700, 20),
+        pygame.Rect(150, 400, 500, 20),
+        pygame.Rect(250, 300, 200, 20),
+        pygame.Rect(50, 200, 200, 20),
     ],
     7: [
-        pygame.Rect(20, 600, 750, 20),  # Plataforma inicial 
-        pygame.Rect(50, 500, 600, 20),
-        pygame.Rect(0, 400, 400, 20),
-        pygame.Rect(500, 400, 300, 20),
-        pygame.Rect(150, 300, 350, 20),
-        pygame.Rect(600, 300, 200, 20),
+        pygame.Rect(20, 700, 750, 20),  # Plataforma inicial 
+        pygame.Rect(50, 600, 600, 20),
+        pygame.Rect(0, 500, 400, 20),
+        pygame.Rect(500, 500, 300, 20),
+        pygame.Rect(150, 400, 350, 20),
+        pygame.Rect(600, 400, 200, 20),
+        pygame.Rect(400, 300, 150, 20),
         pygame.Rect(600, 200, 100, 20),
     ],
     8: [
-        pygame.Rect(20, 600, 750, 20),  # Plataforma inicial 
-        pygame.Rect(300, 500, 500, 20),
-        pygame.Rect(0, 400, 400, 20),
-        pygame.Rect(500, 400, 200, 20),
-        pygame.Rect(100, 300, 450, 20),
-        pygame.Rect(600, 300, 200, 20),
+        pygame.Rect(20, 700, 750, 20),  # Plataforma inicial 
+        pygame.Rect(300, 600, 600, 20),
+        pygame.Rect(0, 500, 400, 20),
+        pygame.Rect(500, 500, 300, 20),
+        pygame.Rect(100, 400, 450, 20),
+        pygame.Rect(600, 400, 200, 20),
+        pygame.Rect(200, 300, 200, 20),
         pygame.Rect(450, 200, 200, 20),
     ],
     9: [
-        pygame.Rect(20, 600, 750, 20),  # Plataforma inicial 
-        pygame.Rect(0, 500, 350, 20),
-        pygame.Rect(550, 500, 350, 20),
-        pygame.Rect(0, 400, 900, 20),
-        pygame.Rect(50, 300, 300, 20),
-        pygame.Rect(450, 300, 350, 20),
-        pygame.Rect(350, 200, 300, 20),
+        pygame.Rect(20, 700, 750, 20),  # Plataforma inicial 
+        pygame.Rect(0, 600, 350, 20),
+        pygame.Rect(550, 600, 350, 20),
+        pygame.Rect(0, 500, 900, 20),
+        pygame.Rect(50, 400, 300, 20),
+        pygame.Rect(450, 400, 350, 20),
+        pygame.Rect(350, 300, 300, 20),
+        pygame.Rect(700, 200, 200, 20),
     ],
     10: [
-        pygame.Rect(20, 600, 750, 20),  # Plataforma inicial 
-        pygame.Rect(0, 500, 350, 20),
-        pygame.Rect(550, 500, 350, 20),
-        pygame.Rect(0, 400, 900, 20),
-        pygame.Rect(50, 300, 300, 20),
-        pygame.Rect(450, 300, 350, 20),
-        pygame.Rect(150, 200, 300, 20),
+        pygame.Rect(20, 700, 750, 20),  # Plataforma inicial 
+        pygame.Rect(0, 600, 350, 20),
+        pygame.Rect(550, 600, 350, 20),
+        pygame.Rect(0, 500, 900, 20),
+        pygame.Rect(50, 400, 300, 20),
+        pygame.Rect(450, 400, 350, 20),
+        pygame.Rect(400, 300, 200, 20),
+        pygame.Rect(200, 200, 100, 20),
     ] 
 }
+
+# Clase para representar disparo de enemigos
+class EnemyBullet:
+    def __init__(self, x, y, thunder_img, speed=1):
+        self.image = thunder_img  # Imagen del disparo
+        self.rect = self.image.get_rect(center=(x, y)) 
+        self.speed = speed  
+
+    def move(self):
+        self.rect.y += self.speed  # Mover 
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)  # Amarillo
+
+# Clase para representar una partícula
+class Particle:
+    def __init__(self, x, y, color, speed, lifespan):
+        self.x = x
+        self.y = y
+        self.color = color
+        self.speed = speed
+        self.lifespan = lifespan
+        self.size = 2
+    
+    def update(self):
+        # Actualizamos la posición de la partícula para crear el efecto de dispersión
+        self.x += random.randint(-self.speed, self.speed)
+        self.y += random.randint(-self.speed, self.speed)
+        self.lifespan -= 1  # Disminuir la vida útil de la partícula
+    
+    def draw(self, screen):
+        # Dibujamos la partícula
+        pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
+
+# Clase que gestiona el efecto de chispas
+class SparkEffect:
+    def __init__(self, x, y):
+        self.particles = []
+        for _ in range(30):  # Generamos 30 partículas por colisión
+            color = (255, random.randint(200, 255), 0)  # Color amarillo o blanco
+            speed = random.randint(6, 12)  # Velocidad de dispersión
+            lifespan = random.randint(20, 40)  # Duración de la partícula
+            self.particles.append(Particle(x, y, color, speed, lifespan))
+    
+    def update(self):
+        # Actualizamos las partículas y eliminamos las que ya han expirado
+        for particle in self.particles[:]:
+            particle.update()
+            if particle.lifespan <= 0:
+                self.particles.remove(particle)
+    
+    def draw(self, screen):
+        # Dibujamos las partículas en la pantalla
+        for particle in self.particles:
+            particle.draw(screen)
+
+# Lista ordenada de objetos por nivel
+required_objects_order = ["comida", "agua", "resorte", "churu", "hierba", "ovillo", "ratoncito", "arenero", "caja", "cama"]
+
+# Función para renderizar texto con fondo negro
+def render_with_black_background(text, color, pos):
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect(center=pos)
+        
+    # Fondo negro detrás del texto 
+    padding = 10  # Espaciado entre el texto y el fondo
+    background_rect = pygame.Rect(text_rect.x - padding, text_rect.y - padding, text_rect.width + 2 * padding, text_rect.height + 2 * padding)        
+    pygame.draw.rect(screen, BLACK, background_rect)  # Dibuja el fondo negro
+    screen.blit(text_surface, text_rect)  # Dibuja el texto sobre el fondo negro
+
+# Función que resetea el juego
+def reset_game():
+    global current_level, collected_objects, collision_count
+    current_level = 1
+    collected_objects.clear()
+    collision_count = 0
+    reset_level()  # Reiniciar el nivel actual
+    display_start_screen()  # Mostrar pantalla inicial
 
 # Función de cambio de niveles
 def reset_level():
     global player, enemies, platforms
-    player.topleft = (20, 600)
+    player.topleft = (20, 700)
     player_x, player_y = player.topleft  # Coordenadas del gatito
     enemies.clear()
 
@@ -448,6 +583,12 @@ def move_enemies():
             enemy["rect"].x += enemy["direction"] * enemy_speed
             if enemy["rect"].left <= enemy["platform"].left or enemy["rect"].right >= enemy["platform"].right:
                 enemy["direction"] *= -1  # Cambiar dirección si toca el borde de la plataforma
+            # Generar disparo aleatorio
+            if random.randint(1, 500) <= 1:  # 5% de probabilidad de disparo
+                new_bullet = EnemyBullet(
+                    enemy["rect"].centerx, enemy["rect"].bottom, thunder_img
+                )
+                enemy_bullets.append(new_bullet)
 
             # Controlar el salto aleatorio
             if not enemy["jumping"]:
@@ -493,13 +634,49 @@ def display_ui():
         screen.blit(obj, (x_offset, 35))  # Dibujamos el icono redimensionado
         x_offset += 40  # Espaciado entre los iconos
     
-    # Código para mostrar el nivel actual
+    # Mostrar el nivel actual
     level_text = font.render(f"Nivel {current_level}", True, BEIGE)  # Texto del nivel
     screen.blit(level_text, (WIDTH - level_text.get_width() -10, 10))  # Posición
+    
+    # Calcular y mostrar vidas en forma de corazones
+    remaining_lives = 3 - collision_count  # Si collision_count es 1, mostrará 2 corazones, etc.
+    # Dibujar los corazones en la parte superior de la pantalla
+    for i in range(remaining_lives):
+        screen.blit(heart_img, (WIDTH -(i + 1) * (heart_img.get_width() + 5), 35))  # Ajusta la posición
 
-# Transición musica
+# Función pantalla Game Over
+def display_game_over_screen():
+    global render_with_black_background
+    
+    screen.blit(game_over_bg, (0, 0)) # Dibujar imagen de fondo
+    
+    play_music(game_over_music, volume=0.5)
+    # Texto 
+    render_with_black_background("¡Has perdido! La IA se interpuso en tu camino", WHITE, (WIDTH // 2, HEIGHT - 550))
+    render_with_black_background("Presiona < Enter > para intentar de nuevo", WHITE, (WIDTH // 2, HEIGHT - 518))
+
+    pygame.display.flip()
+
+    # Esperar a que el jugador presione Enter para reiniciar
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            
+            # Salir del juego con la tecla F1
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_F1:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                waiting = False
+                reset_game()  # Reiniciar el juego
+
+# Transición entre musicas
 def transition_to_next_music(new_music_file, fade_duration=1000, volume=0.5):
-    """Transición suave entre las músicas con una pantalla negra."""
+    
     # Reproducir la música actual a un volumen bajo mientras cambia
     pygame.mixer.music.fadeout(fade_duration // 2)  # Baja gradualmente la música actual
     pygame.time.wait(fade_duration // 2)  # Espera a que termine el fadeout
@@ -569,8 +746,8 @@ def display_start_screen():
     screen.blit(enter_message, (WIDTH // 2 - enter_message.get_width() // 2, box_y + 190))
 
     screen.blit(logo_img, (5, 5))
-
-    screen.blit(controls_img, (5, 595))
+    screen.blit(quit_img, (895, 765))
+    screen.blit(controls_img, (5, 695))
 
     pygame.display.flip() 
 
@@ -585,6 +762,11 @@ def display_start_screen():
                 pygame.quit()
                 sys.exit()
 
+            # Salir del juego con la tecla F1
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_F1:
+                pygame.quit()
+                sys.exit()
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     if player_name.strip() == "":
@@ -592,7 +774,7 @@ def display_start_screen():
                     else:
                         name_entered = True
                         # Llamar a la transición antes de continuar con los niveles
-                        transition_to_next_music(level_music, fade_duration=1000, volume=0.3)  # Transición de música
+                        transition_to_next_music(level_music, fade_duration=1000, volume=0.4)  # Transición de música
                         # Continuar con el juego...
                 elif event.key == pygame.K_BACKSPACE:
                     player_name = player_name[:-1]
@@ -624,7 +806,7 @@ def display_end_screen():
     final_sound.play()
 
     # Función para renderizar texto con fondo negro
-    def render_with_black_background(text, color, pos):
+    def render_with_beige_background(text, color, pos):
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect(center=pos)
         
@@ -635,13 +817,15 @@ def display_end_screen():
         screen.blit(text_surface, text_rect)  # Dibuja el texto sobre el fondo negro
 
     # Llamadas a la función para los mensajes
-    render_with_black_background(f"¡Lo lograste! '{player_name}' ha superado todos los peligros.", BLACK, (WIDTH // 2, HEIGHT // 9))
-    render_with_black_background(f"Gracias a ti, ahora '{player_name}' puede disfrutar", BLACK, (WIDTH // 2, HEIGHT // 5))
-    render_with_black_background("de todos sus preciados objetos y descansar en paz.", BLACK, (WIDTH // 2, HEIGHT // 4))
-    render_with_black_background("* Presiona < Enter > para jugar de nuevo *", BLACK, (WIDTH // 2, HEIGHT - 200))
+    render_with_beige_background(f"¡Lo lograste! '{player_name}' ha superado todos los peligros.", BLACK, (WIDTH // 2, HEIGHT // 9))
+    render_with_beige_background(f"Gracias a ti, ahora '{player_name}' puede disfrutar", BLACK, (WIDTH // 2, HEIGHT // 5))
+    render_with_beige_background("de todos sus preciados objetos y descansar en paz.", BLACK, (WIDTH // 2, HEIGHT // 4))
+    render_with_beige_background("* Presiona < Enter > para jugar de nuevo *", BLACK, (WIDTH // 2, HEIGHT - 200))
 
     # Dibujar el logo
-    screen.blit(logo_img, (5, 550))
+    screen.blit(logo_img, (5, 650))
+    # Indicador para salir del juego
+    screen.blit(quit_img, (895, 765))
 
     # Dibujar los iconos 
     icon_x = WIDTH // 2 - 100  
@@ -691,6 +875,11 @@ def display_end_screen():
     while waiting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            
+            # Salir del juego con la tecla F1
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_F1:
                 pygame.quit()
                 sys.exit()
 
@@ -767,6 +956,28 @@ def display_level_transition(level):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 waiting = False
 
+# Función para manejar efecto de colision
+def handle_collision_with_effects(x, y):
+    # Crear el efecto de chispas en la posición de la colisión
+    spark_effect = SparkEffect(x, y)
+    all_sparks.append(spark_effect)  # Agregar el efecto a la lista
+
+# Función para manejar las vidas del jugador (enemigos o caidas)
+def handle_collision():
+    global collision_count
+
+    collision_count += 1  # Incrementa el contador de colisiones o vidas perdidas
+
+    if collision_count > 3:  # Límite de vidas
+        game_over_sound.play()
+        render_with_black_background("GAME OVER", WHITE, (WIDTH // 2, HEIGHT // 2))
+        display_ui()
+        pygame.display.flip()
+        pygame.time.wait(2000)  # Pausa de 2 segundos
+        display_game_over_screen()
+    else:
+        reset_level()  # Resetear el nivel actual
+
 # Bucle principal
 collected_objects = []  # Cambiar de set() a lista vacía
 def main():
@@ -776,22 +987,25 @@ def main():
     running = True
 
     screen.blit(start_screen_bg, (0, 0))
-
     display_start_screen()
-    
     reset_level()
 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-    
+
+            # Salir del juego con la tecla F1
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_F1:
+                pygame.quit()
+                sys.exit()
+
         keys = pygame.key.get_pressed()
 
         # Si el gato se cae de la pantalla (fuera de los límites)
         if player.y > HEIGHT:  # Si el gato se sale por la parte inferior
             falls_sound.play()
-            reset_level()  # Resetear al inicio del nivel
+            handle_collision()  # Manejar colisión por caída
             player_velocity_y = 0  # Detener la velocidad de caída
 
         # Movimiento del jugador
@@ -801,13 +1015,13 @@ def main():
             player_facing_right = False
             if pygame.time.get_ticks() - last_move_time > movement_interval:
                 cat_img = cat_img_1 if cat_img == cat_img_2 else cat_img_2
-                last_move_time = pygame.time.get_ticks()  # Actualizamos el tiempo del último movimiento
+                last_move_time = pygame.time.get_ticks()
         if keys[pygame.K_RIGHT]:
             player.x += player_speed
             player_facing_right = True
             if pygame.time.get_ticks() - last_move_time > movement_interval:
                 cat_img = cat_img_1 if cat_img == cat_img_2 else cat_img_2
-                last_move_time = pygame.time.get_ticks()  # Actualizamos el tiempo del último movimiento
+                last_move_time = pygame.time.get_ticks()
         if keys[pygame.K_SPACE] and on_ground:
             player_velocity_y = player_jump
             on_ground = False
@@ -832,8 +1046,14 @@ def main():
         for enemy in enemies:
             if player.colliderect(enemy["rect"]):
                 enemy_hit_sound.play()
-                reset_level()
-        
+                handle_collision_with_effects(player.centerx, player.centery)  # Crear el efecto de chispas
+                handle_collision()  # Manejar colisión con enemigo
+
+        # Actualizar y dibujar los efectos de chispas
+        for spark in all_sparks[:]:
+            spark.update()  # Actualizar partículas
+            spark.draw(screen)  # Dibujar partículas en pantalla
+
         if player.colliderect(object_rect):
             if levels[current_level]["object"] not in collected_objects:
                 item_pickup_sound.play()  # Reproduce el sonido al recoger el objeto
@@ -844,12 +1064,25 @@ def main():
 
                 if current_level > len(levels):
                     display_end_screen()  # Mostrar la pantalla final
-                    reset_level()  # Reiniciar el nivel
-                    current_level = 1  # Volver al primer nivel
-                    collected_objects.clear()  # Vaciar la lista de objetos recogidos
-                    display_start_screen()  # Mostrar la pantalla inicial nuevamente
+                    reset_game()
                 else:
                     reset_level()  # Reiniciar el nuevo nivel
+
+        for bullet in enemy_bullets[:]:
+            bullet.move()
+            bullet.draw(screen)
+
+            # Verificar colisión con el jugador
+            if player.colliderect(bullet.rect):
+                handle_collision_with_effects(bullet.rect.x, bullet.rect.y)  # Efecto de colisión
+                enemy_hit_sound.play()
+                handle_collision()  # Reducir vidas del jugador
+                enemy_bullets.remove(bullet)  # Eliminar el disparo tras la colisión
+
+            # Eliminar disparos fuera de la pantalla
+            if bullet.rect.top > HEIGHT:
+                enemy_bullets.remove(bullet)
+
 
         display_ui()
         pygame.display.flip()
